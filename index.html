@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Logo Image Effects Editor</title>
-<link rel="icon" type="Logo.png" href="Logo.png">
+  <title>Canva-Style Image Effects Editor</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
@@ -108,7 +107,7 @@
 
     .canvas-wrapper {
       flex: 1;
-      padding: 80px 40px 40px; /* Offset for absolute top-bar */
+      padding: 80px 40px 40px; 
       display: flex;
       justify-content: center;
       align-items: center;
@@ -340,9 +339,25 @@
     }
     #emptyState svg { width: 48px; height: 48px; fill: var(--border); }
     #emptyState h2 { margin: 0; font-size: 16px; font-weight: 500; color: #555; }
+
+    /* Brush Cursor Guide */
+    .brush-cursor {
+      position: fixed;
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      display: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
   </style>
 </head>
 <body>
+
+  <!-- BRUSH CURSOR OVERLAY -->
+  <div id="brushCursor" class="brush-cursor"></div>
 
   <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
@@ -405,7 +420,7 @@
         </div>
       </div>
 
-      <!-- IMAGE ADJUSTMENTS (CANVA LIKE) -->
+      <!-- IMAGE ADJUSTMENTS -->
       <div class="control-group">
         <div class="group-header">
           <h3>3. Adjustments</h3>
@@ -491,6 +506,93 @@
           <input type="range" id="shadowY" min="-100" max="100" value="0" />
         </div>
       </div>
+      
+      <!-- BRUSH TOOL -->
+      <div class="control-group">
+        <div class="group-header">
+          <h3>7. Paint / Color Brush</h3>
+          <label class="switch">
+            <input type="checkbox" id="brushToggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div id="brushControls" class="nested-controls disabled">
+          <div class="color-row">
+             <label>Brush Color</label>
+             <input type="color" id="brushColor" value="#041508">
+          </div>
+          <div class="slider-row">
+            <label>Size (px)</label>
+            <input type="number" class="val-input" id="val-brushSize" value="60" />
+          </div>
+          <input type="range" id="brushSize" min="1" max="400" value="60" />
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+             <button id="undoBrushBtn" class="sm-btn" style="flex:1;">↩️ Undo</button>
+             <button id="clearBrushBtn" class="sm-btn" style="flex:1;">🗑️ Clear All</button>
+          </div>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px; line-height: 1.4;">Toggle on, pick a color, and click/drag on the canvas to paint over logos.</p>
+        </div>
+      </div>
+      
+      <!-- IMAGE OVERLAY TOOL -->
+      <div class="control-group">
+        <div class="group-header">
+          <h3>8. Add Image Overlay</h3>
+          <button id="clearOverlayBtn" class="sm-btn">🗑️ Clear</button>
+        </div>
+        <div class="upload-box">
+          <input type="file" id="uploadOverlay" accept="image/*" class="file-input" />
+          <label for="uploadOverlay" class="upload-label">
+            <span>🖼️ Upload Overlay Image</span>
+          </label>
+        </div>
+        
+        <div class="slider-row">
+          <label>Scale</label>
+          <input type="number" class="val-input" id="val-overlayScale" step="0.05" value="1" />
+        </div>
+        <input type="range" id="overlayScale" min="0.1" max="5" step="0.05" value="1" />
+
+        <div class="slider-row">
+          <label>Rotation</label>
+          <input type="number" class="val-input" id="val-overlayRotate" value="0" />
+        </div>
+        <input type="range" id="overlayRotate" min="-180" max="180" value="0" />
+
+        <div class="slider-row">
+          <label>Position X</label>
+          <input type="number" class="val-input" id="val-overlayX" value="0" />
+        </div>
+        <input type="range" id="overlayX" min="-2000" max="2000" value="0" />
+        
+        <div class="slider-row">
+          <label>Position Y</label>
+          <input type="number" class="val-input" id="val-overlayY" value="0" />
+        </div>
+        <input type="range" id="overlayY" min="-2000" max="2000" value="0" />
+
+        <!-- Overlay Erase Feature -->
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);">
+          <div class="group-header" style="margin-bottom: 8px;">
+            <h3 style="font-size: 11px; color: var(--text-muted);">Erase on Overlay</h3>
+            <label class="switch">
+              <input type="checkbox" id="overlayEraseToggle">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div id="overlayEraseControls" class="nested-controls disabled">
+            <div class="slider-row">
+              <label>Eraser Size (px)</label>
+              <input type="number" class="val-input" id="val-overlayEraseSize" value="60" />
+            </div>
+            <input type="range" id="overlayEraseSize" min="1" max="400" value="60" />
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+               <button id="undoOverlayEraseBtn" class="sm-btn" style="flex:1;">↩️ Undo</button>
+               <button id="clearOverlayEraseBtn" class="sm-btn" style="flex:1;">🗑️ Restore All</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </aside>
@@ -520,14 +622,12 @@
     const downloadBtn = document.getElementById("downloadBtn");
     const emptyState = document.getElementById("emptyState");
     const statusText = document.getElementById("statusText");
+    const brushCursor = document.getElementById("brushCursor");
 
     // Transform Controls
     const scaleInput = document.getElementById("scale");
     const fgXInput = document.getElementById("fgX");
     const fgYInput = document.getElementById("fgY");
-    const valScale = document.getElementById("val-scale");
-    const valFgX = document.getElementById("val-fgX");
-    const valFgY = document.getElementById("val-fgY");
 
     // Background Controls
     const bgLayerColor = document.getElementById("bgLayerColor");
@@ -538,21 +638,16 @@
     const brightnessInput = document.getElementById("brightness");
     const contrastInput = document.getElementById("contrast");
     const saturationInput = document.getElementById("saturation");
-    const valBrightness = document.getElementById("val-brightness");
-    const valContrast = document.getElementById("val-contrast");
-    const valSaturation = document.getElementById("val-saturation");
 
     // BG Remover Controls
     const bgColorTarget = document.getElementById("bgColorTarget");
     const toleranceInput = document.getElementById("tolerance");
-    const valTolerance = document.getElementById("val-tolerance");
     const removeBgBtn = document.getElementById("removeBgBtn");
     const resetBgRemovalBtn = document.getElementById("resetBgRemovalBtn");
 
     // Stroke Controls
     const strokeSize = document.getElementById("strokeSize");
     const strokeColor = document.getElementById("strokeColor");
-    const valStrokeSize = document.getElementById("val-strokeSize");
 
     // Shadow Controls
     const shadowToggle = document.getElementById("shadowToggle");
@@ -561,20 +656,112 @@
     const shadowX = document.getElementById("shadowX");
     const shadowY = document.getElementById("shadowY");
     const shadowColor = document.getElementById("shadowColor");
-
-    // Shadow Value Displays
-    const valShadowBlur = document.getElementById("val-shadowBlur");
-    const valShadowX = document.getElementById("val-shadowX");
-    const valShadowY = document.getElementById("val-shadowY");
+    
+    // Brush Controls
+    const brushToggle = document.getElementById("brushToggle");
+    const brushControls = document.getElementById("brushControls");
+    const undoBrushBtn = document.getElementById("undoBrushBtn");
+    const clearBrushBtn = document.getElementById("clearBrushBtn");
+    
+    // Overlay Controls
+    const uploadOverlay = document.getElementById("uploadOverlay");
+    const clearOverlayBtn = document.getElementById("clearOverlayBtn");
+    const overlayEraseToggle = document.getElementById("overlayEraseToggle");
+    const overlayEraseControls = document.getElementById("overlayEraseControls");
+    const undoOverlayEraseBtn = document.getElementById("undoOverlayEraseBtn");
+    const clearOverlayEraseBtn = document.getElementById("clearOverlayEraseBtn");
 
     // --- STATE VARIABLES ---
-    let originalImage = null;       // Raw uploaded foreground image
-    let cachedCutoutCanvas = null;  // Buffer holding foreground after BG removal (to optimize render speed)
-    let bgImageObj = null;          // Uploaded background image
+    let originalImage = null;       
+    let cachedCutoutCanvas = null;  
+    let bgImageObj = null;          
+    let overlayImageObj = null;     
+    
+    // Paint State
+    let paintCanvas = document.createElement("canvas");
+    let pCtx = paintCanvas.getContext("2d");
+    let isPainting = false;
+    let paintHistory = [];
+
+    // Overlay Eraser State
+    let overlayMaskCanvas = document.createElement("canvas");
+    let omCtx = overlayMaskCanvas.getContext("2d");
+    let isOverlayErasing = false;
+    let overlayEraseHistory = [];
+
+    // Mouse Tracking for Cursor Guide
+    let mouseX = -100;
+    let mouseY = -100;
+
+    function savePaintState() {
+        if(!paintCanvas) return;
+        paintHistory.push(pCtx.getImageData(0, 0, paintCanvas.width, paintCanvas.height));
+        if(paintHistory.length > 20) paintHistory.shift(); 
+    }
+
+    function undoPaint() {
+        if(paintHistory.length > 1) {
+            paintHistory.pop(); 
+            pCtx.putImageData(paintHistory[paintHistory.length - 1], 0, 0); 
+            draw();
+        } else if (paintHistory.length === 1) {
+            pCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+            paintHistory = [];
+            savePaintState();
+            draw();
+        }
+    }
+
+    function saveOverlayEraseState() {
+        if(!overlayMaskCanvas) return;
+        overlayEraseHistory.push(omCtx.getImageData(0, 0, overlayMaskCanvas.width, overlayMaskCanvas.height));
+        if(overlayEraseHistory.length > 20) overlayEraseHistory.shift(); 
+    }
+
+    function undoOverlayErase() {
+        if(overlayEraseHistory.length > 1) {
+            overlayEraseHistory.pop(); 
+            omCtx.putImageData(overlayEraseHistory[overlayEraseHistory.length - 1], 0, 0); 
+            draw();
+        } else if (overlayEraseHistory.length === 1) {
+            omCtx.clearRect(0, 0, overlayMaskCanvas.width, overlayMaskCanvas.height);
+            overlayEraseHistory = [];
+            saveOverlayEraseState();
+            draw();
+        }
+    }
+
+    function updateCursorPosition() {
+        const isBrush = brushToggle.checked;
+        const isOverlayErase = overlayEraseToggle.checked;
+
+        if (!originalImage || (!isBrush && !isOverlayErase)) {
+            brushCursor.style.display = 'none';
+            canvas.style.cursor = 'default';
+            return;
+        }
+
+        canvas.style.cursor = 'none';
+        brushCursor.style.display = 'block';
+        brushCursor.style.left = mouseX + 'px';
+        brushCursor.style.top = mouseY + 'px';
+
+        let sizeVal = isBrush ? parseInt(document.getElementById('brushSize').value) : parseInt(document.getElementById('overlayEraseSize').value);
+
+        // Map brush image pixel size to CSS screen pixels
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = rect.width / canvas.width;
+        const tScale = parseFloat(scaleInput.value);
+        
+        // Correct visual scaled size of the brush guide
+        const visualSize = sizeVal * tScale * scaleX;
+
+        brushCursor.style.width = visualSize + 'px';
+        brushCursor.style.height = visualSize + 'px';
+    }
 
     // --- INITIALIZATION ---
     function init() {
-        // Map sliders to their manual input counterparts
         const syncPairs = [
             ['scale', 'val-scale'],
             ['fgX', 'val-fgX'],
@@ -586,27 +773,30 @@
             ['strokeSize', 'val-strokeSize'],
             ['shadowBlur', 'val-shadowBlur'],
             ['shadowX', 'val-shadowX'],
-            ['shadowY', 'val-shadowY']
+            ['shadowY', 'val-shadowY'],
+            ['brushSize', 'val-brushSize'],
+            ['overlayScale', 'val-overlayScale'],
+            ['overlayRotate', 'val-overlayRotate'],
+            ['overlayX', 'val-overlayX'],
+            ['overlayY', 'val-overlayY'],
+            ['overlayEraseSize', 'val-overlayEraseSize']
         ];
 
         syncPairs.forEach(([sliderId, inputId]) => {
             const slider = document.getElementById(sliderId);
             const input = document.getElementById(inputId);
-            
-            // Slider to Input
-            slider.addEventListener('input', () => {
-                input.value = slider.value;
-                draw();
+            slider.addEventListener('input', () => { 
+                input.value = slider.value; 
+                draw(); 
+                updateCursorPosition(); 
             });
-            
-            // Input to Slider
-            input.addEventListener('input', () => {
-                slider.value = input.value;
-                draw();
+            input.addEventListener('input', () => { 
+                slider.value = input.value; 
+                draw(); 
+                updateCursorPosition(); 
             });
         });
 
-        // Other UI update listeners
         bgLayerColor.addEventListener("input", draw);
         bgTransparent.addEventListener("change", draw);
         strokeColor.addEventListener("input", draw);
@@ -622,13 +812,174 @@
             draw();
         });
         
+        // Ensure brush and overlay eraser don't activate at the same time
+        brushToggle.addEventListener("change", () => {
+            if (brushToggle.checked) {
+                brushControls.classList.remove("disabled");
+                overlayEraseToggle.checked = false;
+                overlayEraseControls.classList.add("disabled");
+            } else {
+                brushControls.classList.add("disabled");
+            }
+            updateCursorPosition();
+        });
+
+        overlayEraseToggle.addEventListener("change", () => {
+            if (overlayEraseToggle.checked) {
+                overlayEraseControls.classList.remove("disabled");
+                brushToggle.checked = false;
+                brushControls.classList.add("disabled");
+            } else {
+                overlayEraseControls.classList.add("disabled");
+            }
+            updateCursorPosition();
+        });
+        
+        undoBrushBtn.addEventListener("click", undoPaint);
+        undoOverlayEraseBtn.addEventListener("click", undoOverlayErase);
+        
+        clearBrushBtn.addEventListener("click", () => {
+            if(originalImage) {
+                pCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+                savePaintState();
+                draw();
+            }
+        });
+        
+        clearOverlayBtn.addEventListener("click", () => {
+            overlayImageObj = null;
+            uploadOverlay.value = "";
+            
+            document.getElementById("val-overlayScale").value = 1;
+            document.getElementById("overlayScale").value = 1;
+            document.getElementById("val-overlayRotate").value = 0;
+            document.getElementById("overlayRotate").value = 0;
+            document.getElementById("val-overlayX").value = 0;
+            document.getElementById("overlayX").value = 0;
+            document.getElementById("val-overlayY").value = 0;
+            document.getElementById("overlayY").value = 0;
+            
+            if(originalImage) {
+                omCtx.clearRect(0, 0, overlayMaskCanvas.width, overlayMaskCanvas.height);
+                overlayEraseHistory = [];
+                saveOverlayEraseState();
+            }
+            draw();
+        });
+
+        clearOverlayEraseBtn.addEventListener("click", () => {
+            if(originalImage) {
+                omCtx.clearRect(0, 0, overlayMaskCanvas.width, overlayMaskCanvas.height);
+                overlayEraseHistory = [];
+                saveOverlayEraseState();
+                draw();
+            }
+        });
+
+        // Mouse Events for Drawing and Cursor Guide
+        canvas.addEventListener('mouseenter', () => updateCursorPosition());
+        canvas.addEventListener('mouseleave', () => { 
+            brushCursor.style.display = 'none'; 
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!originalImage) return;
+            if (brushToggle.checked) {
+                isPainting = true;
+                pCtx.beginPath();
+                drawStroke(e, false, 'paint');
+            } else if (overlayEraseToggle.checked && overlayImageObj) {
+                isOverlayErasing = true;
+                omCtx.beginPath();
+                drawStroke(e, false, 'eraseOverlay');
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            updateCursorPosition();
+
+            if (!originalImage) return;
+            if (isPainting && brushToggle.checked) {
+                drawStroke(e, true, 'paint');
+            } else if (isOverlayErasing && overlayEraseToggle.checked && overlayImageObj) {
+                drawStroke(e, true, 'eraseOverlay');
+            }
+        });
+
+        window.addEventListener('mouseup', () => { 
+            if (isPainting) {
+                isPainting = false; 
+                savePaintState();
+            }
+            if (isOverlayErasing) {
+                isOverlayErasing = false;
+                saveOverlayEraseState();
+            }
+        });
+        
         // Actions
         upload.addEventListener("change", handleForegroundUpload);
         uploadBg.addEventListener("change", handleBackgroundUpload);
+        uploadOverlay.addEventListener("change", handleOverlayUpload);
         clearBgBtn.addEventListener("click", clearBackgroundImage);
         downloadBtn.addEventListener("click", downloadImage);
         removeBgBtn.addEventListener("click", applyBackgroundRemoval);
         resetBgRemovalBtn.addEventListener("click", resetBackgroundRemoval);
+    }
+    
+    // --- PAINTING / ERASING LOGIC ---
+    function drawStroke(e, isDrawing, mode) {
+        const cw = originalImage.width;
+        const ch = originalImage.height;
+        
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const scale = Math.max(scaleX, scaleY);
+        
+        const drawnWidth = canvas.width / scale;
+        const drawnHeight = canvas.height / scale;
+        const offsetX = (rect.width - drawnWidth) / 2;
+        const offsetY = (rect.height - drawnHeight) / 2;
+
+        const mX = e.clientX - rect.left - offsetX;
+        const mY = e.clientY - rect.top - offsetY;
+
+        const canvasX = mX * scale;
+        const canvasY = mY * scale;
+
+        const tScale = parseFloat(scaleInput.value);
+        const tX = parseInt(fgXInput.value);
+        const tY = parseInt(fgYInput.value);
+
+        const paintX = (canvasX - (cw / 2 + tX)) / tScale + (cw / 2);
+        const paintY = (canvasY - (ch / 2 + tY)) / tScale + (ch / 2);
+
+        let targetCtx = mode === 'paint' ? pCtx : omCtx;
+        
+        targetCtx.lineCap = "round";
+        targetCtx.lineJoin = "round";
+        
+        if(mode === 'paint') {
+            targetCtx.lineWidth = parseInt(document.getElementById('brushSize').value);
+            targetCtx.strokeStyle = document.getElementById('brushColor').value;
+        } else {
+            targetCtx.lineWidth = parseInt(document.getElementById('overlayEraseSize').value);
+            targetCtx.strokeStyle = "rgba(0,0,0,1)"; 
+        }
+
+        if (!isDrawing) {
+            targetCtx.moveTo(paintX, paintY);
+            targetCtx.lineTo(paintX, paintY);
+            targetCtx.stroke();
+        } else {
+            targetCtx.lineTo(paintX, paintY);
+            targetCtx.stroke();
+        }
+        
+        draw();
     }
 
     // --- HANDLERS ---
@@ -640,20 +991,32 @@
         img.onload = () => {
             originalImage = img;
             
-            // Set dynamic limits for translation based on image size
+            // Setup Paint Canvas
+            paintCanvas.width = img.width;
+            paintCanvas.height = img.height;
+            pCtx.clearRect(0, 0, img.width, img.height);
+            
+            // Setup Overlay Mask Canvas
+            overlayMaskCanvas.width = img.width;
+            overlayMaskCanvas.height = img.height;
+            omCtx.clearRect(0, 0, img.width, img.height);
+            overlayEraseHistory = [];
+            saveOverlayEraseState();
+
+            paintHistory = [];
+            savePaintState();
+            
             fgXInput.min = -img.width;
             fgXInput.max = img.width;
             fgYInput.min = -img.height;
             fgYInput.max = img.height;
 
-            // Reset transform for new image
             scaleInput.value = 1; document.getElementById("val-scale").value = 1;
             fgXInput.value = 0;   document.getElementById("val-fgX").value = 0;
             fgYInput.value = 0;   document.getElementById("val-fgY").value = 0;
 
             emptyState.style.display = "none";
             
-            // Set initial cutout buffer to the original image
             resetBackgroundRemoval(); 
         };
         img.src = URL.createObjectURL(file);
@@ -675,10 +1038,19 @@
         uploadBg.value = "";
         draw();
     }
+    
+    function handleOverlayUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const img = new Image();
+        img.onload = () => {
+            overlayImageObj = img;
+            draw();
+        };
+        img.src = URL.createObjectURL(file);
+    }
 
     // --- PROCESSING LOGIC ---
-
-    // Restores the original uploaded image without the background removed
     function resetBackgroundRemoval() {
         if (!originalImage) return;
         
@@ -692,27 +1064,23 @@
         draw();
     }
 
-    // Runs Euclidean color distance to strip out the background matching the Target Color
     function applyBackgroundRemoval() {
         if (!originalImage) return;
 
         statusText.textContent = "Processing Background Removal...";
-        statusText.style.color = "#ffca28"; // Warning color while working
+        statusText.style.color = "#ffca28"; 
 
-        // Use a short timeout to allow the browser to update the UI "Processing..." text
         setTimeout(() => {
             const tempCanvas = document.createElement("canvas");
             tempCanvas.width = originalImage.width;
             tempCanvas.height = originalImage.height;
             const tempCtx = tempCanvas.getContext("2d");
 
-            // Always process from the raw original image
             tempCtx.drawImage(originalImage, 0, 0);
 
             const frame = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const data = frame.data;
 
-            // Get Target Color (Hex to RGB)
             const hex = bgColorTarget.value;
             const rT = parseInt(hex.slice(1, 3), 16);
             const gT = parseInt(hex.slice(3, 5), 16);
@@ -720,14 +1088,13 @@
             
             const thresh = parseInt(toleranceInput.value);
 
-            // Euclidean Distance Pixel Matching
             for (let i = 0; i < data.length; i += 4) {
                 const r = data[i];
                 const g = data[i + 1];
                 const b = data[i + 2];
                 const a = data[i + 3];
 
-                if (a > 0) { // Only check non-transparent pixels
+                if (a > 0) { 
                     const dist = Math.sqrt(
                         Math.pow(r - rT, 2) + 
                         Math.pow(g - gT, 2) + 
@@ -735,14 +1102,13 @@
                     );
 
                     if (dist < thresh) {
-                        data[i + 3] = 0; // Set Alpha to 0 (Transparent)
+                        data[i + 3] = 0; 
                     }
                 }
             }
 
             tempCtx.putImageData(frame, 0, 0);
 
-            // Save this to our cache canvas
             cachedCutoutCanvas = tempCanvas;
             
             statusText.textContent = "Background Removed!";
@@ -752,7 +1118,6 @@
         }, 50);
     }
 
-    // Creates a solid silhouette of an image for the Stroke effect
     function createSilhouette(imgCanvas, color, width, height) {
         const sCanvas = document.createElement("canvas");
         sCanvas.width = width;
@@ -771,42 +1136,71 @@
     function draw() {
         if (!originalImage || !cachedCutoutCanvas) return;
 
-        // 1. Establish Canvas Artboard Size based on Foreground Original Size
-        // This ensures high-res outputs regardless of UI scaling
         const cw = originalImage.width;
         const ch = originalImage.height;
         canvas.width = cw;
         canvas.height = ch;
 
-        // Clear Main Canvas completely
+        // 1. Clear Main Canvas
         ctx.clearRect(0, 0, cw, ch);
 
-        // 2. Render Layer 1: Background Color
+        // 2. Background Color Layer
         if (!bgTransparent.checked) {
             ctx.fillStyle = bgLayerColor.value;
             ctx.fillRect(0, 0, cw, ch);
         }
 
-        // 3. Render Layer 2: Background Image (if any)
+        // 3. Background Image Layer
         if (bgImageObj) {
-            // Draw background image scaled to cover the canvas
             const bgScale = Math.max(cw / bgImageObj.width, ch / bgImageObj.height);
             const bx = (cw / 2) - (bgImageObj.width / 2) * bgScale;
             const by = (ch / 2) - (bgImageObj.height / 2) * bgScale;
             ctx.drawImage(bgImageObj, bx, by, bgImageObj.width * bgScale, bgImageObj.height * bgScale);
         }
 
-        // 4. Prepare Layer 3: Foreground (with Filters)
+        // 4. Base Foreground Layer (Filters Applied)
         const filteredCanvas = document.createElement("canvas");
         filteredCanvas.width = cw;
         filteredCanvas.height = ch;
         const fCtx = filteredCanvas.getContext("2d");
         
-        // Apply Canva-like adjustments (Brightness, Contrast, Saturation)
         fCtx.filter = `brightness(${brightnessInput.value}%) contrast(${contrastInput.value}%) saturate(${saturationInput.value}%)`;
         fCtx.drawImage(cachedCutoutCanvas, 0, 0);
+        
+        // 5. Custom Color Paint Layer
+        fCtx.filter = "none";
+        fCtx.drawImage(paintCanvas, 0, 0);
+        
+        // 6. Overlay Image Layer (with internal Eraser Masking)
+        if (overlayImageObj) {
+            // Create a temporary canvas to build the masked overlay
+            const tempOverlayLayer = document.createElement("canvas");
+            tempOverlayLayer.width = cw;
+            tempOverlayLayer.height = ch;
+            const toCtx = tempOverlayLayer.getContext("2d");
 
-        // 5. Prepare Stroke Buffer
+            // Draw and position the overlay
+            toCtx.save();
+            const ox = (cw / 2) + parseInt(document.getElementById("overlayX").value);
+            const oy = (ch / 2) + parseInt(document.getElementById("overlayY").value);
+            const oScale = parseFloat(document.getElementById("overlayScale").value);
+            const oRotate = parseInt(document.getElementById("overlayRotate").value);
+
+            toCtx.translate(ox, oy);
+            toCtx.rotate(oRotate * Math.PI / 180);
+            toCtx.scale(oScale, oScale);
+            toCtx.drawImage(overlayImageObj, -overlayImageObj.width / 2, -overlayImageObj.height / 2);
+            toCtx.restore();
+
+            // Apply the user's erase strokes directly to this overlay layer
+            toCtx.globalCompositeOperation = 'destination-out';
+            toCtx.drawImage(overlayMaskCanvas, 0, 0);
+
+            // Draw final masked overlay onto the foreground compilation
+            fCtx.drawImage(tempOverlayLayer, 0, 0);
+        }
+
+        // 7. Outline Buffer
         const strokeBuffer = document.createElement("canvas");
         strokeBuffer.width = cw;
         strokeBuffer.height = ch;
@@ -814,10 +1208,7 @@
 
         const sSize = parseInt(strokeSize.value);
         if (sSize > 0) {
-            // Create silhouette from the FILTERED canvas to match boundaries exactly
             const silhouette = createSilhouette(filteredCanvas, strokeColor.value, cw, ch);
-            
-            // Draw stroke circularly
             const angles = 32; 
             for (let i = 0; i < angles; i++) {
                 const angle = (i * 2 * Math.PI) / angles;
@@ -827,22 +1218,17 @@
             }
         }
 
-        // Draw main filtered foreground on top of the stroke inside the buffer
         bCtx.drawImage(filteredCanvas, 0, 0);
 
-        // 6. Draw the Final Foreground Buffer onto Main Canvas with Transforms & Shadow
+        // 8. Draw Final Output to Screen Canvas (with transforms and shadows)
         ctx.save();
-        
-        // Apply Transforms (Translate center, scale, translate back + custom offset)
         const tScale = parseFloat(scaleInput.value);
         const tX = parseInt(fgXInput.value);
         const tY = parseInt(fgYInput.value);
 
-        // Move to center + offset, scale, then draw image offset by half its size
         ctx.translate((cw / 2) + tX, (ch / 2) + tY);
         ctx.scale(tScale, tScale);
 
-        // Apply Drop Shadow to the entire composed Foreground unit
         if (shadowToggle.checked) {
             ctx.shadowColor = shadowColor.value;
             ctx.shadowBlur = parseInt(shadowBlur.value);
@@ -850,7 +1236,6 @@
             ctx.shadowOffsetY = parseInt(shadowY.value);
         }
         
-        // Draw the composed foreground buffer
         ctx.drawImage(strokeBuffer, -cw / 2, -ch / 2);
         ctx.restore();
     }
